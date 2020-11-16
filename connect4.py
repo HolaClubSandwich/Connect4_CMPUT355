@@ -106,6 +106,8 @@ class connect4Board():
         print(self.board)
         return
 
+
+
     def check_end_game(self,player_int):
         #citation: 
         # https://medium.com/@geoffrey.mariette/crazy-connect4-with-python-146d384f4cfb
@@ -132,7 +134,10 @@ class connect4Board():
 
         
 
-        
+        #solver
+        #minimax
+        #score?
+
     
 
 
