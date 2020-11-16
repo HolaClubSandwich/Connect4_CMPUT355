@@ -110,7 +110,7 @@ class connect4Board():
 
     def check_end_game(self,player_int):
         #citation: 
-        # https://medium.com/@geoffrey.mariette/crazy-connect4-with-python-146d384f4cfb
+        # https://stackoverflow.com/questions/29949169/python-connect-4-check-win-function
 #check rows for connected four only first four as possible start
         for col in range(self.boardsize_length-3):
             for row in range(self.boardsize_height):
