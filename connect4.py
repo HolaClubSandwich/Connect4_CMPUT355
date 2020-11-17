@@ -19,7 +19,7 @@ class connect4Board():
 
     
     
-    #change from ['b'，'w'] ->[1,2]
+    #change from ['b'w'] ->[1,2]
     def setStartingPlayer(self):
         if self.currentPlayer is None:
             self.currentPlayer = self.black
@@ -60,7 +60,7 @@ class connect4Board():
         print("current play is ", player)
         change = False
         boardPos = 'abcdefg'
-        position = input("Where to play? \n")
+        position = input("Where to play? (a,b,c,d,e,f,g)\n")
 
         if position not in boardPos:
             print("Wrong position")
@@ -150,7 +150,6 @@ print(board.currentPlayer)
 while not board.end_game:#if not over
     change = board.play()
     print("change is ",change)
-
     board.changePlayer(change)
     board.printBoard()
     
