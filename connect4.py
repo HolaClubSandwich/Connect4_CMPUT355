@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 
 
@@ -19,7 +20,7 @@ class connect4Board():
 
     
     
-    #change from ['b'w'] ->[1,2]
+    #change from ['b'，'w'] ->[1,2]
     def setStartingPlayer(self):
         if self.currentPlayer is None:
             self.currentPlayer = self.black
@@ -57,38 +58,78 @@ class connect4Board():
     def play(self):
         
         player = self.currentPlayer
-        print("current play is ", player)
-        change = False
-        boardPos = 'abcdefg'
-        position = input("Where to play? (a,b,c,d,e,f,g)\n")
+        if player == "b":
+            print("current play is ", player)
+            change = False
+            boardPos = 'abcdefg'
+            position = input("Where to play? \n")
 
-        if position not in boardPos:
-            print("Wrong position")
+            if position not in boardPos:
+                print("Wrong position")
+                return change
+    
+            playPos = boardPos.find(position)
+            #print("playpos")
+            #print(playPos)
+            if not self.board[0,playPos] == 0:#only need to check the first row
+                print("This column is full!")
+                return change
+    
+            print("im here",playPos)
+            for i in range(self.boardsize_height-1,-1,-1):
+                print(i)
+                if self.board[i,playPos]==0:
+                    print("yes")
+                    
+                    self.board[i,playPos] = self.convertPieceInt(player)
+                    #check end game
+                    player_int = self.board[i,playPos]
+                    end = self.check_end_game(player_int)
+                    if end:
+                        self.winner = self.currentPlayer
+                        self.end_game = True
+                        print('GG')
+                        print('winner is ', self.winner)
+                    change = True
+                    break
             return change
+        
+        else:
+            print("current play is ", player)
+            change = False
+            boardPos = 'abcdefg'
+            pos = random.randrange(7)
+            position = boardPos[pos]
 
-        playPos = boardPos.find(position)
-        if not self.board[0,playPos] == 0:#only need to check the first row
-            print("This column is full!")
+            if position not in boardPos:
+                print("Wrong position")
+                return change
+    
+            playPos = boardPos.find(position)
+            #print("playpos")
+            #print(playPos)
+            if not self.board[0,playPos] == 0:#only need to check the first row
+                print("This column is full!")
+                return change
+    
+            print("im here",playPos)
+            for i in range(self.boardsize_height-1,-1,-1):
+                print(i)
+                if self.board[i,playPos]==0:
+                    print("yes")
+                    
+                    self.board[i,playPos] = self.convertPieceInt(player)
+                    #check end game
+                    player_int = self.board[i,playPos]
+                    end = self.check_end_game(player_int)
+                    if end:
+                        self.winner = self.currentPlayer
+                        self.end_game = True
+                        print('GG')
+                        print('winner is ', self.winner)
+                    change = True
+                    break
             return change
-
-        print("im here",playPos)
-        for i in range(self.boardsize_height-1,-1,-1):
-            print(i)
-            if self.board[i,playPos]==0:
-                print("yes")
-                
-                self.board[i,playPos] = self.convertPieceInt(player)
-                #check end game
-                player_int = self.board[i,playPos]
-                end = self.check_end_game(player_int)
-                if end:
-                    self.winner = self.currentPlayer
-                    self.end_game = True
-                    print('GG')
-                    print('winner is ', self.winner)
-                change = True
-                break
-        return change
             
                 
 
@@ -130,16 +171,6 @@ class connect4Board():
                 if self.board[row][col] == player_int and self.board[row-1][col+1] == player_int  and self.board[row-2][col+2] == player_int and self.board[row-3][col+3] == player_int:
                     return True
 
-        
-
-        
-    
-
-
-
-
-
-
 
 board = connect4Board()
 
@@ -150,6 +181,10 @@ print(board.currentPlayer)
 while not board.end_game:#if not over
     change = board.play()
     print("change is ",change)
+
     board.changePlayer(change)
     board.printBoard()
     
+    
+
+        
