@@ -13,8 +13,6 @@ class connect4Board():
         self.black = 'b'
         self.white = 'w'
         self.currentPlayer = None
-        self.NS = 8
-        self.WE = 1
         #init_endgame
         self.end_game = False
         self.winner = None
@@ -28,7 +26,7 @@ class connect4Board():
             self.currentPlayer = self.black
 
     
-
+    #Player converted
     def convertPieceInt(self,piece: str):
         pieceInt = None
 
@@ -53,6 +51,7 @@ class connect4Board():
     
     '''
     
+    #Draw a 7*6 gamme board
     def drawBoard(self):
         self.board = np.zeros((self.boardsize_height,self.boardsize_length))
         return self.board
@@ -63,25 +62,23 @@ class connect4Board():
 
         return self.board[0,play] == 0
 
+    #Check whether player made a legal move
     def legalMoves(self):
-        columns = 'abcdefg'
+        columns = 'abcdefg'#Seven cols
         legalPositions = []
         for i, col in enumerate(columns):#range(self.boardsize_length):
             if self.is_valid(i):
-                legalPositions.append(i)
-        
+                legalPositions.append(i)  
         return legalPositions
+
 
     def get_row_col(self,play):
         for row in range(self.boardsize_height-1,-1,-1):
             if self.board[row,play]==0:
                 return row
 
-
-        
     
-
-
+    #Play function of connect4, is used to check situations
     def play(self,playPos):
         
         player = self.currentPlayer
@@ -135,7 +132,7 @@ class connect4Board():
         return
 
 
-
+    #check whether game is end
     def check_end_game(self,player_int):
         #citation: 
         # https://stackoverflow.com/questions/29949169/python-connect-4-check-win-function
@@ -154,7 +151,7 @@ class connect4Board():
             for row in range(self.boardsize_height-3):
                 if self.board[row][col] == player_int and self.board[row+1][col+1] == player_int  and self.board[row+2][col+2] == player_int and self.board[row+3][col+3] == player_int:
                     return True
-##check diags for y = -x direction,since starter can only start at and before row 3 and first 4 columns
+#check diags for y = -x direction,since starter can only start at and before row 3 and first 4 columns
         for col in range(self.boardsize_length-3):
             for row in range(self.boardsize_height-4,self.boardsize_height):
                 if self.board[row][col] == player_int and self.board[row-1][col+1] == player_int  and self.board[row-2][col+2] == player_int and self.board[row-3][col+3] == player_int:
@@ -162,62 +159,60 @@ class connect4Board():
 
         
 
-        #solver
-        #minimax
-        #score?
-
-
+    #Scores for each condition  
     def evaluate_window(self,window, player_int):
         score = 0
         opp_play = 2#white
         if player_int == 2:#black
             opp_play = 1#white
-
+	
+	
         if window.count(player_int) == 4:
-           score += 100
+	    score += 100
         elif window.count(player_int) == 3 and window.count(0) == 1:
-           score += 5
+	    score += 5
         elif window.count(player_int) == 2 and window.count(0) == 2:
-           score += 2
+	    score += 2
         
         
-
+	
         if window.count(opp_play) == 3 and window.count(0) == 1:
             score -= 10
 
         elif window.count(opp_play) == 2 and window.count(0) == 2:
-           score -= 4
+	    score -= 4
         # print(window)
         return score
 
+    #This function is used to calculate score for each step. 
     def scoring(self,player_int,board):
         score = 0
 
-	## Score center column
+	# Score center column
         center_array = [int(i) for i in board[:, self.boardsize_length//2]]
         center_count = center_array.count(player_int)
         score += center_count * 3
 
-        ## Score Horizontal
+        # Score Horizontal
         for r in range(self.boardsize_height):
             row_array = [int(i) for i in list(board[r,:])]
             for c in range(self.boardsize_length-3):
                 window = row_array[c:c+self.window]
                 score += self.evaluate_window(window, player_int)
 
-        ## Score Vertical
+        # Score Vertical
         for c in range(self.boardsize_length):
             col_array = [int(i) for i in list(board[:,c])]
             for r in range(self.boardsize_height-3):
                 window = col_array[r:r+self.window]
                 score += self.evaluate_window(window, player_int)
 
-        ## Score posiive sloped diagonal
+        # Score positive sloped diagonal
         for r in range(self.boardsize_height-3):
             for c in range(self.boardsize_length-3):
                 window = [board[r+i][c+i] for i in range(self.window)]
                 score += self.evaluate_window(window, player_int)
-
+	# Score negative sloped diagonal
         for r in range(self.boardsize_height-3):
             for c in range(self.boardsize_length-3):
                 window = [board[r+3-i][c+i] for i in range(self.window)]
@@ -264,11 +259,6 @@ class connect4Board():
     
 
 
-
-
-
-
-
 board = connect4Board()
 
 print(board.drawBoard())
@@ -295,7 +285,6 @@ while not board.end_game:#if not over
 
         board.changePlayer(change)
         board.printBoard()
-
 
 
 
