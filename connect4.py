@@ -183,7 +183,7 @@ class connect4Board():
         
 
         if window.count(opp_play) == 3 and window.count(0) == 1:
-            score -= 5
+            score -= 10
 
         elif window.count(opp_play) == 2 and window.count(0) == 2:
            score -= 4
