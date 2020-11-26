@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from numpy.lib.shape_base import column_stack
+import math
 
 
 
@@ -10,8 +11,8 @@ class connect4Board():
         self.board = None
         self.boardsize_length = 7 #column
         self.boardsize_height = 6 #row
-        self.black = 'b'
-        self.white = 'w'
+        self.black = 'black'
+        self.white = 'white'
         self.currentPlayer = None
         self.NS = 8
         self.WE = 1
@@ -27,7 +28,8 @@ class connect4Board():
         if self.currentPlayer is None:
             self.currentPlayer = self.black
 
-    
+    def dropPlay(self, board, row, col, playerInt):
+        board[row][col] = playerInt
 
     def convertPieceInt(self,piece: str):
         pieceInt = None
@@ -85,13 +87,13 @@ class connect4Board():
     def play(self,playPos):
         
         player = self.currentPlayer
-        print("current play is ", player)
+        print("current play is: ", player)
         change = False
         boardPos = 'abcdefg'
         position = playPos
 
         if position not in boardPos:
-            print("Wrong position")
+            print("Position Invalid")
             return change
 
         play = boardPos.find(position)#find relative index
@@ -99,11 +101,11 @@ class connect4Board():
             print("This column is full!")
             return change
 
-        print("im here",play)
+        # print("im here",play)
         for i in range(self.boardsize_height-1,-1,-1):
-            print(i)
+            # print(i)
             if self.board[i,play]==0:
-                print("yes")
+                # print("yes")
                 
                 self.board[i,play] = self.convertPieceInt(player)
                 #check end game
@@ -112,8 +114,8 @@ class connect4Board():
                 if end:
                     self.winner = self.currentPlayer
                     self.end_game = True
-                    print('GG')
-                    print('winner is ', self.winner)
+                    print('Game Over.')
+                    print('winner is:', self.winner)
                 change = True
                 break
         return change
@@ -122,7 +124,7 @@ class connect4Board():
 
     def changePlayer(self,change):
         if change is True:
-            print("test123")
+            # print("test123")
             if self.currentPlayer == self.black:
                 self.currentPlayer = self.white
             elif self.currentPlayer == self.white:
@@ -190,6 +192,10 @@ class connect4Board():
         # print(window)
         return score
 
+
+    # citation:
+    # https://www.youtube.com/watch?v=MMLtza3CZFM&feature=youtu.be
+    # modified base on this video.
     def scoring(self,player_int,board):
         score = 0
 
@@ -217,7 +223,7 @@ class connect4Board():
             for c in range(self.boardsize_length-3):
                 window = [board[r+i][c+i] for i in range(self.window)]
                 score += self.evaluate_window(window, player_int)
-
+        ## Score negative sloped diagonal
         for r in range(self.boardsize_height-3):
             for c in range(self.boardsize_length-3):
                 window = [board[r+3-i][c+i] for i in range(self.window)]
@@ -226,6 +232,52 @@ class connect4Board():
         return score
 
 
+    def is_terminal(self):
+        # 1 is black and 2 is white
+        return self.check_end_game(1) or self.check_end_game(2)
+
+    # Untested minimax agent
+    # citation:
+    # https://en.wikipedia.org/wiki/Minimax#Pseudocode
+    # Modified base on wikipedia minimax pseudocode
+    def minimax(self, board, depth, maximizingPlayer):
+        legalPositions = self.legalMoves()
+        is_end = self.is_terminal()
+        if depth == 0 or is_end:
+            if is_end:
+                if self.check_end_game(2):
+                    return (None, 999999999)
+                elif self.check_end_game(1):
+                    return (None, -999999999)
+                else:
+                    return (None, 0)
+            else:
+                return (None, self.scoring(2, board))
+
+        if maximizingPlayer:
+            value = -math.inf
+            column = random.choice(legalPositions)
+            for col in legalPositions:
+                row = self.get_row_col(col)
+                copyBoard = board.copy()
+                self.dropPlay(copyBoard, row, col, 2)
+                temp, update_score = self.minimax(copyBoard, depth - 1, False)
+                if update_score > value:
+                    value = update_score
+                    column = col
+            return column, value
+        else:
+            value = math.inf
+            column = random.choice(legalPositions)
+            for col in legalPositions:
+                row = self.get_row_col(col)
+                copyBoard = board.copy()
+                self.dropPlay(copyBoard, row, col, 1)
+                temp, update_score = self.minimax(copyBoard, depth - 1, True)
+                if update_score < value:
+                    value = update_score
+                    column = col
+            return column, value
     '''
     function minimax(node, depth, maximizingPlayer) is
         if depth = 0 or node is a terminal node then
@@ -242,11 +294,7 @@ class connect4Board():
             return value
     '''
 
-    
-    '''
-    def is_terminal_node(self,player_int):
-        return check_end_game(self,player_int) or len(legalMoves()== 0)
-'''
+    # Best move agent
     def simulate(self):
         best_score = 0
 
@@ -266,35 +314,78 @@ class connect4Board():
 
 
 
+def main():
+    boardList = ["    a b c d e f g", "  -----------------", "6 | 0 0 0 0 0 0 0 | 6", "5 | 0 0 0 0 0 0 0 | 5", "4 | 0 0 0 0 0 0 0 | 4", "3 | 0 0 0 0 0 0 0 | 3", "2 | 0 0 0 0 0 0 0 | 2", "1 | 0 0 0 0 0 0 0 | 1", "  -----------------", "    a b c d e f g"]
+    connect4 = connect4Board()
+    connect4.drawBoard()
+    for i in boardList:
+        print(i)
+    connect4.setStartingPlayer()
+    end_game = False
+    print('')
+    print("Player Black start first.")
+
+    while not end_game:
+        print("Player Black is 1, Player White is 2 and empty spot is 0.")
+        position = input("Where to play? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
+        if position == 'help':
+            for i in boardList:
+                print(i)
+            print("enter a letter from a to g to pick the column you want to play. \n")
+        elif position == 'exit':
+            end_game = True
+        else:
+            change = connect4.play(position)
+            connect4.changePlayer(change)
+            connect4.printBoard()
+            print('')
+            if connect4.end_game:
+                end_game = True
+
+            if connect4.currentPlayer == connect4.white and not connect4.end_game:
+                boardPos = 'abcdefg'
+                playPos = connect4.simulate()
+                play_ch = boardPos[playPos]
+
+                change = connect4.play(play_ch)
+                connect4.changePlayer(change)
+                connect4.printBoard()
+                if connect4.end_game:
+                    end_game = True
+
+            
+
+main()
 
 
 
-board = connect4Board()
 
-print(board.drawBoard())
-board.setStartingPlayer()
-print(board.currentPlayer)
+# board = connect4Board()
 
-while not board.end_game:#if not over
-    position = input("Where to play? \n")
-    change = board.play(position)
-    print("change is ",change)
+# print(board.drawBoard())
+# board.setStartingPlayer()
+# print(board.currentPlayer)
 
-    board.changePlayer(change)
-    board.printBoard()
+# while not board.end_game:#if not over
+#     position = input("Where to play? \n")
+#     change = board.play(position)
+#     print("change is ",change)
 
-    if board.currentPlayer == board.white and not board.end_game:
-        boardPos = 'abcdefg'
-        #playpos = random.choice(boardPos)
-        playpos = board.simulate()
+#     board.changePlayer(change)
+#     board.printBoard()
 
-        play_ch = boardPos[playpos]
+#     if board.currentPlayer == board.white and not board.end_game:
+#         boardPos = 'abcdefg'
+#         #playpos = random.choice(boardPos)
+#         playpos = board.simulate()
 
-        change = board.play(play_ch)
-        print("change is ",change)
+#         play_ch = boardPos[playpos]
 
-        board.changePlayer(change)
-        board.printBoard()
+#         change = board.play(play_ch)
+#         print("change is ",change)
+
+#         board.changePlayer(change)
+#         board.printBoard()
 
 
 
