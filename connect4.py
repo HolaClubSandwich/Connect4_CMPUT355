@@ -426,7 +426,7 @@ def main():
                         end_game = True
 
         elif player == 'pvp':
-            if not connect4.end_game:
+            if connect4.currentPlayer == connect4.black and not connect4.end_game:
                 print("Where to play black? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
                 
                 player_b = input('black plays: \n').lower()
@@ -436,7 +436,7 @@ def main():
                 print('')
                 if connect4.end_game:
                     end_game = True
-                if not connect4.end_game:
+                if connect4.currentPlayer == connect4.white and not connect4.end_game:
                     player_w = input('white plays: \n').lower()
                     change = connect4.play(player_w)
                     connect4.changePlayer(change)
