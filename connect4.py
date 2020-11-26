@@ -1,3 +1,4 @@
+from math import gamma
 import numpy as np
 import random
 from numpy.lib.shape_base import column_stack
@@ -87,7 +88,7 @@ class connect4Board():
     def play(self,playPos):
         
         player = self.currentPlayer
-        print("current play is: ", player)
+        print("player", player, "played this position.")
         change = False
         boardPos = 'abcdefg'
         position = playPos
@@ -185,7 +186,7 @@ class connect4Board():
         
 
         if window.count(opp_play) == 3 and window.count(0) == 1:
-            score -= 10
+            score -= 20
 
         elif window.count(opp_play) == 2 and window.count(0) == 2:
            score -= 4
@@ -223,6 +224,7 @@ class connect4Board():
             for c in range(self.boardsize_length-3):
                 window = [board[r+i][c+i] for i in range(self.window)]
                 score += self.evaluate_window(window, player_int)
+
         ## Score negative sloped diagonal
         for r in range(self.boardsize_height-3):
             for c in range(self.boardsize_length-3):
@@ -315,6 +317,8 @@ class connect4Board():
 
 
 def main():
+    gmaeMode = input("Please enter 'A' to play with our AI agent, enter 'P' to play with other players \n")
+    print('')
     boardList = ["    a b c d e f g", "  -----------------", "6 | 0 0 0 0 0 0 0 | 6", "5 | 0 0 0 0 0 0 0 | 5", "4 | 0 0 0 0 0 0 0 | 4", "3 | 0 0 0 0 0 0 0 | 3", "2 | 0 0 0 0 0 0 0 | 2", "1 | 0 0 0 0 0 0 0 | 1", "  -----------------", "    a b c d e f g"]
     connect4 = connect4Board()
     connect4.drawBoard()
@@ -324,35 +328,74 @@ def main():
     end_game = False
     print('')
     print("Player Black start first.")
-
-    while not end_game:
-        print("Player Black is 1, Player White is 2 and empty spot is 0.")
-        position = input("Where to play? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
-        if position == 'help':
-            for i in boardList:
-                print(i)
-            print("enter a letter from a to g to pick the column you want to play. \n")
-        elif position == 'exit':
-            end_game = True
-        else:
-            change = connect4.play(position)
-            connect4.changePlayer(change)
-            connect4.printBoard()
-            print('')
-            if connect4.end_game:
+    if gmaeMode == 'A':
+        while not end_game:
+            print("Player Black is 1, Player White is 2 and empty spot is 0.\n")
+            print("Player", connect4.currentPlayer)
+            position = input("Where to play? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
+            if position == 'help':
+                for i in boardList:
+                    print(i)
+                print("enter a letter from a to g to pick the column you want to play. \n")
+            elif position == 'exit':
                 end_game = True
-
-            if connect4.currentPlayer == connect4.white and not connect4.end_game:
-                boardPos = 'abcdefg'
-                playPos = connect4.simulate()
-                play_ch = boardPos[playPos]
-
-                change = connect4.play(play_ch)
+            else:
+                change = connect4.play(position)
                 connect4.changePlayer(change)
                 connect4.printBoard()
+                print("  a  b  c  d  e  f  g ")
+                print('')
                 if connect4.end_game:
                     end_game = True
 
+                if connect4.currentPlayer == connect4.white and not connect4.end_game:
+                    boardPos = 'abcdefg'
+                    playPos = connect4.simulate()
+                    play_ch = boardPos[playPos]
+
+                    change = connect4.play(play_ch)
+                    connect4.changePlayer(change)
+                    connect4.printBoard()
+                    print("  a  b  c  d  e  f  g \n")
+                    if connect4.end_game:
+                        end_game = True
+    elif gmaeMode == 'P':
+        while not end_game:
+            print("Player Black is 1, Player White is 2 and empty spot is 0.\n")
+            print("Player", connect4.currentPlayer)
+            position = input("Where to play? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
+            if position == 'help':
+                for i in boardList:
+                    print(i)
+                print("enter a letter from a to g to pick the column you want to play. \n")
+            elif position == 'exit':
+                end_game = True
+            else:
+                change = connect4.play(position)
+                connect4.changePlayer(change)
+                connect4.printBoard()
+                print("  a  b  c  d  e  f  g ")
+                print('')
+                if connect4.end_game:
+                    end_game = True
+                
+                if connect4.currentPlayer == connect4.white and not connect4.end_game:
+                    print("Player", connect4.currentPlayer)
+                    p2 = input("Where to play? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
+                    if position == 'help':
+                        for i in boardList:
+                            print(i)
+                        print("enter a letter from a to g to pick the column you want to play. \n")
+                    elif position == 'exit':
+                        end_game = True
+                    else:
+                        change = connect4.play(p2)
+                        connect4.changePlayer(change)
+                        connect4.printBoard()
+                        print("  a  b  c  d  e  f  g ")
+                        print('')
+                        if connect4.end_game:
+                            end_game = True
             
 
 main()
