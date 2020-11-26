@@ -33,7 +33,7 @@ class connect4Board():
             self.AI = 2
             return False
         elif player == 'w':
-            self.currentPlayer = self.white
+            self.currentPlayer = self.black
             self.start = self.white
             self.AI = 1
             return False
@@ -102,8 +102,10 @@ class connect4Board():
         for i, col in enumerate(columns):#range(self.boardsize_length):
             if self.is_valid(i):
                 legalPositions.append(i)
+        if not len(legalPositions) == 0:
+            return legalPositions
+
         
-        return legalPositions
 
     def get_row_col(self,play):
         for row in range(self.boardsize_height-1,-1,-1):
@@ -160,6 +162,7 @@ class connect4Board():
                 self.currentPlayer = self.white
             elif self.currentPlayer == self.white:
                 self.currentPlayer = self.black
+        
 
         return
 
@@ -396,19 +399,19 @@ def main():
 
             
             if connect4.AI == 1 and not connect4.end_game:
+                if connect4.currentPlayer == connect4.black:
                 
                 
-                
-                boardPos = 'abcdefg'
-                playPos = connect4.simulate()
-                play_ch = boardPos[playPos]
-                connect4.currentPlayer = connect4.black
+                    boardPos = 'abcdefg'
+                    playPos = connect4.simulate()
+                    play_ch = boardPos[playPos]
 
-                change = connect4.play(play_ch)
-                connect4.changePlayer(change)
-                connect4.printBoard()
-                if connect4.end_game:
-                    end_game = True
+
+                    change = connect4.play(play_ch)
+                    connect4.changePlayer(change)
+                    connect4.printBoard()
+                    if connect4.end_game:
+                        end_game = True
 
                 elif connect4.currentPlayer == connect4.white and not connect4.end_game:
                     position = input("Where to play white? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n").lower()
@@ -418,6 +421,7 @@ def main():
                         print("enter a letter from a to g to pick the column you want to play. \n")
                     elif position == 'exit':
                         end_game = True
+                    
                     change = connect4.play(position)
                     connect4.changePlayer(change)
                     connect4.printBoard()
@@ -469,6 +473,7 @@ def main():
                     
                     if connect4.end_game:
                         end_game = True
+
         elif player == 'aivsrand':
             if not connect4.end_game:
                 boardPos = 'abcdefg'
