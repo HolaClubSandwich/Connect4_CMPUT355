@@ -37,6 +37,18 @@ class connect4Board():
             self.start = self.white
             self.AI = 1
             return False
+        elif player =='pvp':
+            self.currentPlayer = self.black
+            return False
+        elif player == 'aivsai':
+            self.currentPlayer = self.black
+            return False
+        elif player == 'aivsrand':
+            self.currentPlayer = self.black
+            return False
+
+
+
         else:
             
             print('invalid player!')
@@ -195,7 +207,7 @@ class connect4Board():
             opp_play = 1#white
 
         if window.count(player_int) == 4:
-           score += 1000
+           score += 200
         elif window.count(player_int) == 3 and window.count(0) == 1:
            score += 5
         elif window.count(player_int) == 2 and window.count(0) == 2:
@@ -339,7 +351,7 @@ def main():
     connect4.drawBoard()
     for i in boardList:
         print(i)
-    player = input('Select your player:(b/w) PS.BLACK ALWAYS GO FIRST   ').lower()
+    player = input('Select your player:(b/w/pvp/aivsai/aivsrand) PS.BLACK ALWAYS GO FIRST   ').lower()
     
     end_game = connect4.setStartingPlayer(player)
     print('')
@@ -412,6 +424,74 @@ def main():
                     print('')
                     if connect4.end_game:
                         end_game = True
+
+        elif player == 'pvp':
+            if not connect4.end_game:
+                print("Where to play black? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
+                
+                player_b = input('black plays: \n').lower()
+                change = connect4.play(player_b)
+                connect4.changePlayer(change)
+                connect4.printBoard()
+                print('')
+                if connect4.end_game:
+                    end_game = True
+                if not connect4.end_game:
+                    player_w = input('white plays: \n').lower()
+                    change = connect4.play(player_w)
+                    connect4.changePlayer(change)
+                    connect4.printBoard()
+                    print('')
+                    if connect4.end_game:
+                        end_game = True
+
+        elif player == 'aivsai':
+            if connect4.currentPlayer == connect4.black and not connect4.end_game:
+                boardPos = 'abcdefg'
+                connect4.AI = 1
+                playPos = connect4.simulate()
+                play_ch = boardPos[playPos]
+
+                change = connect4.play(play_ch)
+                connect4.changePlayer(change)
+                connect4.printBoard()
+                if connect4.end_game:
+                    end_game = True
+                if connect4.currentPlayer == connect4.white and not connect4.end_game:
+                    boardPos = 'abcdefg'
+                    connect4.AI = 2
+                    playPos = connect4.simulate()
+                    play_ch = boardPos[playPos]
+
+                    change = connect4.play(play_ch)
+                    connect4.changePlayer(change)
+                    connect4.printBoard()
+                    
+                    if connect4.end_game:
+                        end_game = True
+        elif player == 'aivsrand':
+            if not connect4.end_game:
+                boardPos = 'abcdefg'
+                connect4.AI = 1
+                playPos = connect4.simulate()
+                play_ch = boardPos[playPos]
+
+                change = connect4.play(play_ch)
+                connect4.changePlayer(change)
+                connect4.printBoard()
+                if connect4.end_game:
+                    end_game = True
+                if not connect4.end_game:
+                    boardPos = 'abcdefg'
+                    playpos = random.choice(boardPos)
+
+                    change = connect4.play(playpos)
+                    connect4.changePlayer(change)
+                    connect4.printBoard()
+                    
+                    if connect4.end_game:
+                        end_game = True
+
 
                 
 
