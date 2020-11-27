@@ -426,6 +426,9 @@ def main():
                 connect4.printBoard()
                 print("  a  b  c  d  e  f  g ")
                 print('')
+                if len(connect4.legalMoves()) == 0:
+                    print("DRAW!")
+                    end_game = True
                 if connect4.end_game:
                     end_game = True
                 # if len(connect4.legalMoves()) == 0:
@@ -445,6 +448,9 @@ def main():
                         connect4.printBoard()
                         print("  a  b  c  d  e  f  g ")
                         print('')
+                        if len(connect4.legalMoves()) == 0:
+                            print("DRAW!")
+                            end_game = True
                         if connect4.end_game:
                             end_game = True
     elif gmaeMode == 'aivai':
