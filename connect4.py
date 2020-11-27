@@ -177,7 +177,7 @@ class connect4Board():
             opp_play = 1#white
 
         if window.count(player_int) == 4:
-           score += 200
+           score += 150
         elif window.count(player_int) == 3 and window.count(0) == 1:
            score += 5
         elif window.count(player_int) == 2 and window.count(0) == 2:
@@ -186,7 +186,7 @@ class connect4Board():
         
 
         if window.count(opp_play) == 3 and window.count(0) == 1:
-            score -= 15
+            score -= 20
 
         elif window.count(opp_play) == 2 and window.count(0) == 2:
            score -= 4
@@ -305,6 +305,8 @@ class connect4Board():
         for col in legalMoves:
             row = self.get_row_col(col)
             temp_board = self.board.copy()
+            # temp_board[row,col] = 2
+            # score = self.scoring(2,temp_board)
             temp_board[row,col] = self.convertPieceInt(self.currentPlayer)
             score = self.scoring(self.convertPieceInt(self.currentPlayer),temp_board)
             if score > best_score:
@@ -312,7 +314,22 @@ class connect4Board():
                 best_col = col
         return best_col
     
+    def simulateForBlack(self):
+        best_score = 0
 
+        legalMoves = self.legalMoves()
+        best_col = random.choice(legalMoves)
+        for col in legalMoves:
+            row = self.get_row_col(col)
+            temp_board = self.board.copy()
+            temp_board[row,col] = 2
+            score = self.scoring(2,temp_board)
+            # temp_board[row,col] = self.convertPieceInt(self.currentPlayer)
+            # score = self.scoring(self.convertPieceInt(self.currentPlayer),temp_board)
+            if score > best_score:
+                best_score = score
+                best_col = col
+        return best_col
 
 
 
@@ -364,7 +381,8 @@ def main():
         elif color == 'w':
             while not end_game:
                 boardPos = 'abcdefg'
-                playPos = connect4.simulate()
+                print(connect4.currentPlayer)
+                playPos = connect4.simulateForBlack()
                 play_ch = boardPos[playPos]
                 change = connect4.play(play_ch)
                 connect4.changePlayer(change)
@@ -432,13 +450,16 @@ def main():
     elif gmaeMode == 'aivai':
         while not end_game:
             boardPos = 'abcdefg'
-            playPos = connect4.simulate()
+            playPos = connect4.simulateForBlack()
             play_ch = boardPos[playPos]
             change = connect4.play(play_ch)
             connect4.changePlayer(change)
             connect4.printBoard()
             print("  a  b  c  d  e  f  g \n")
             if connect4.end_game:
+                end_game = True
+            if len(connect4.legalMoves()) == 0:
+                print("DRAW!")
                 end_game = True
             if connect4.currentPlayer == connect4.white and not connect4.end_game:
                 boardP = 'abcdefg'
@@ -449,6 +470,9 @@ def main():
                 connect4.changePlayer(change1)
                 connect4.printBoard()
                 print("  a  b  c  d  e  f  g \n")
+                if len(connect4.legalMoves()) == 0:
+                    print("DRAW!")
+                    end_game = True
                 if connect4.end_game:
                     end_game = True
     elif gmaeMode == 'aivrand':
