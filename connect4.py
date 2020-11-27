@@ -177,7 +177,7 @@ class connect4Board():
             opp_play = 1#white
 
         if window.count(player_int) == 4:
-           score += 100
+           score += 150
         elif window.count(player_int) == 3 and window.count(0) == 1:
            score += 5
         elif window.count(player_int) == 2 and window.count(0) == 2:
@@ -305,19 +305,36 @@ class connect4Board():
         for col in legalMoves:
             row = self.get_row_col(col)
             temp_board = self.board.copy()
-            temp_board[row,col] = 2
-            score = self.scoring(2,temp_board)
+            # temp_board[row,col] = 2
+            # score = self.scoring(2,temp_board)
+            temp_board[row,col] = self.convertPieceInt(self.currentPlayer)
+            score = self.scoring(self.convertPieceInt(self.currentPlayer),temp_board)
             if score > best_score:
                 best_score = score
                 best_col = col
         return best_col
     
+    def simulateForBlack(self):
+        best_score = 0
 
+        legalMoves = self.legalMoves()
+        best_col = random.choice(legalMoves)
+        for col in legalMoves:
+            row = self.get_row_col(col)
+            temp_board = self.board.copy()
+            temp_board[row,col] = 2
+            score = self.scoring(2,temp_board)
+            # temp_board[row,col] = self.convertPieceInt(self.currentPlayer)
+            # score = self.scoring(self.convertPieceInt(self.currentPlayer),temp_board)
+            if score > best_score:
+                best_score = score
+                best_col = col
+        return best_col
 
 
 
 def main():
-    gmaeMode = input("Please enter 'A' to play with our AI agent, enter 'P' to play with other players \n")
+    gmaeMode = input("Select your play mode: (pvai/pvp/aivai/aivrand) \n").lower()
     print('')
     boardList = ["    a b c d e f g", "  -----------------", "6 | 0 0 0 0 0 0 0 | 6", "5 | 0 0 0 0 0 0 0 | 5", "4 | 0 0 0 0 0 0 0 | 4", "3 | 0 0 0 0 0 0 0 | 3", "2 | 0 0 0 0 0 0 0 | 2", "1 | 0 0 0 0 0 0 0 | 1", "  -----------------", "    a b c d e f g"]
     connect4 = connect4Board()
@@ -327,39 +344,72 @@ def main():
     connect4.setStartingPlayer()
     end_game = False
     print('')
-    print("Player Black start first.")
-    if gmaeMode == 'A':
-        while not end_game:
-            print("Player Black is 1, Player White is 2 and empty spot is 0.\n")
-            print("Player", connect4.currentPlayer)
-            position = input("Where to play? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
-            if position == 'help':
-                for i in boardList:
-                    print(i)
-                print("enter a letter from a to g to pick the column you want to play. \n")
-            elif position == 'exit':
-                end_game = True
-            else:
-                change = connect4.play(position)
-                connect4.changePlayer(change)
-                connect4.printBoard()
-                print("  a  b  c  d  e  f  g ")
-                print('')
-                if connect4.end_game:
+    # print("Player Black start first.")
+    if gmaeMode == 'pvai':
+        color = input("Please select balck(b) or white(w). PS. BLACK ALWAYS GO FIRST.   \n")
+        if color == 'b':
+            while not end_game:
+                print("Player Black is 1, Player White is 2 and empty spot is 0.\n")
+                print("Player", connect4.currentPlayer)
+                position = input("Where to play? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
+                if position == 'help':
+                    for i in boardList:
+                        print(i)
+                    print("enter a letter from a to g to pick the column you want to play. \n")
+                elif position == 'exit':
                     end_game = True
-
-                if connect4.currentPlayer == connect4.white and not connect4.end_game:
-                    boardPos = 'abcdefg'
-                    playPos = connect4.simulate()
-                    play_ch = boardPos[playPos]
-
-                    change = connect4.play(play_ch)
+                else:
+                    change = connect4.play(position)
                     connect4.changePlayer(change)
                     connect4.printBoard()
-                    print("  a  b  c  d  e  f  g \n")
+                    print("  a  b  c  d  e  f  g ")
+                    print('')
                     if connect4.end_game:
                         end_game = True
-    elif gmaeMode == 'P':
+
+                    if connect4.currentPlayer == connect4.white and not connect4.end_game:
+                        boardPos = 'abcdefg'
+                        playPos = connect4.simulate()
+                        play_ch = boardPos[playPos]
+
+                        change = connect4.play(play_ch)
+                        connect4.changePlayer(change)
+                        connect4.printBoard()
+                        print("  a  b  c  d  e  f  g \n")
+                        if connect4.end_game:
+                            end_game = True
+        elif color == 'w':
+            while not end_game:
+                boardPos = 'abcdefg'
+                print(connect4.currentPlayer)
+                playPos = connect4.simulateForBlack()
+                play_ch = boardPos[playPos]
+                change = connect4.play(play_ch)
+                connect4.changePlayer(change)
+                connect4.printBoard()
+                print("  a  b  c  d  e  f  g \n")
+                if connect4.end_game:
+                    end_game = True
+                if connect4.currentPlayer == connect4.white and not connect4.end_game:
+                    print("Player Black is 1, Player White is 2 and empty spot is 0.\n")
+                    print("Player", connect4.currentPlayer)
+                    position = input("Where to play? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
+                    if position == 'help':
+                        for i in boardList:
+                            print(i)
+                        print("enter a letter from a to g to pick the column you want to play. \n")
+                    elif position == 'exit':
+                        end_game = True
+                    else:
+                        change = connect4.play(position)
+                        connect4.changePlayer(change)
+                        connect4.printBoard()
+                        print("  a  b  c  d  e  f  g ")
+                        print('')
+                        if connect4.end_game:
+                            end_game = True
+
+    elif gmaeMode == 'pvp':
         while not end_game:
             print("Player Black is 1, Player White is 2 and empty spot is 0.\n")
             print("Player", connect4.currentPlayer)
@@ -376,9 +426,13 @@ def main():
                 connect4.printBoard()
                 print("  a  b  c  d  e  f  g ")
                 print('')
+                if len(connect4.legalMoves()) == 0:
+                    print("DRAW!")
+                    end_game = True
                 if connect4.end_game:
                     end_game = True
-                
+                # if len(connect4.legalMoves()) == 0:
+                #     end_game = True
                 if connect4.currentPlayer == connect4.white and not connect4.end_game:
                     print("Player", connect4.currentPlayer)
                     p2 = input("Where to play? (enter 'a - g' to play, 'help' for help, 'exit' to exit.) \n")
@@ -394,41 +448,69 @@ def main():
                         connect4.printBoard()
                         print("  a  b  c  d  e  f  g ")
                         print('')
+                        if len(connect4.legalMoves()) == 0:
+                            print("DRAW!")
+                            end_game = True
                         if connect4.end_game:
                             end_game = True
+    elif gmaeMode == 'aivai':
+        while not end_game:
+            boardPos = 'abcdefg'
+            playPos = connect4.simulateForBlack()
+            play_ch = boardPos[playPos]
+            change = connect4.play(play_ch)
+            connect4.changePlayer(change)
+            connect4.printBoard()
+            print("  a  b  c  d  e  f  g \n")
+            if connect4.end_game:
+                end_game = True
+            if len(connect4.legalMoves()) == 0:
+                print("DRAW!")
+                end_game = True
+            if connect4.currentPlayer == connect4.white and not connect4.end_game:
+                boardP = 'abcdefg'
+                playP = connect4.simulate()
+                playC = boardP[playP]
+
+                change1 = connect4.play(playC)
+                connect4.changePlayer(change1)
+                connect4.printBoard()
+                print("  a  b  c  d  e  f  g \n")
+                if len(connect4.legalMoves()) == 0:
+                    print("DRAW!")
+                    end_game = True
+                if connect4.end_game:
+                    end_game = True
+    elif gmaeMode == 'aivrand':
+        while not end_game:
+            boardPos = 'abcdefg'
+            playPos = connect4.simulate()
+            play_ch = boardPos[playPos]
+            change = connect4.play(play_ch)
+            connect4.changePlayer(change)
+            connect4.printBoard()
+            print("  a  b  c  d  e  f  g \n")
+            if connect4.end_game:
+                end_game = True
+            if connect4.currentPlayer == connect4.white and not connect4.end_game:
+                boardP = 'abcdefg'
+                playP = random.choice(boardP)
+                change1 = connect4.play(playP)
+                connect4.changePlayer(change1)
+                connect4.printBoard()
+                print("  a  b  c  d  e  f  g \n")
+                if connect4.end_game:
+                    end_game = True
+    else:
+        print("Invalid enter.")
+        print("Game end.")
+
+        
+
             
 
 main()
 
-
-
-
-# board = connect4Board()
-
-# print(board.drawBoard())
-# board.setStartingPlayer()
-# print(board.currentPlayer)
-
-# while not board.end_game:#if not over
-#     position = input("Where to play? \n")
-#     change = board.play(position)
-#     print("change is ",change)
-
-#     board.changePlayer(change)
-#     board.printBoard()
-
-#     if board.currentPlayer == board.white and not board.end_game:
-#         boardPos = 'abcdefg'
-#         #playpos = random.choice(boardPos)
-#         playpos = board.simulate()
-
-#         play_ch = boardPos[playpos]
-
-#         change = board.play(play_ch)
-#         print("change is ",change)
-
-#         board.changePlayer(change)
-#         board.printBoard()
 
 
 
